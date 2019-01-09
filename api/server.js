@@ -22,10 +22,31 @@ server.get('/users/', (req, res) => {
   userDb
     .get()
     .then(users => {
+      console.log(users);
+
       res.status(200).json(users);
     })
-    .catch(err => {
-      errorMessage: `there was an error retrieving the users: ${err}`;
+    .catch(err =>
+      res.status(400).json({
+        errorMessage: `there was an error retrieving the users: ${err}`,
+      }),
+    );
+});
+
+// get specific user
+server.get('/users/:id', (req, res) => {
+  userDb
+    .get(req.params.id)
+    // user is retrieved, send back to client
+    .then(user => {
+      if (user) {
+        console.log(user);
+
+        res.status(200).json(user);
+      } else {
+        // user not found, return error
+        res.status(404).json({errorMessage: `no user with that id`});
+      }
     });
 });
 
