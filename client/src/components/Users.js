@@ -2,10 +2,12 @@ import React from 'react';
 import axios from 'axios';
 import styled, {ThemeProvider} from 'styled-components';
 
+// axios instance with base url to simplify requests
 const ax = axios.create({
-  baseURL: 'http://localhost:5000', // this isn't working for some reason
+  baseURL: 'http://localhost:5000',
 });
 
+// theme for styled components
 const theme = {
   granite: '#6d6466',
   gray: '#9f9f92',
@@ -33,12 +35,14 @@ const User = styled.div`
   box-shadow: 2px 2px 10px ${props => props.theme.granite};
   color: ${props => props.theme.granite};
   transition: all 0.2s ease-out;
+  border-radius: 5px;
 
   &:hover {
     color: ${props => props.theme.black};
     font-weight: bold;
     transform: scale(1.2, 1.5);
     background-color: ${props => props.theme.gray};
+    border-radius: 200px;
   }
 `;
 
