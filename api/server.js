@@ -132,5 +132,29 @@ server.put('/users/:id', checkForValidUser, capitalizeName, (req, res) => {
     });
 });
 
+// delete a user
+server.delete('/users/:id', checkForValidUser, (req, res) => {
+  userDb
+    .remove(req.params.id)
+    .then(count => {
+      // return updated user list
+      if (count === 1) {
+        userDb
+          .get()
+          .then(users => res.status(200).json(users))
+          .catch(err => {
+            errorMessage: `user was deleted, but there was an error fetching the updated user list: ${err}`;
+          });
+      } // idk what happened
+      else
+        res
+          .status(500)
+          .send({errorMessage: 'there was an error removing the user'});
+    })
+    .catch(err => {
+      errorMessage: 'there was an error deleting the user';
+    });
+});
+
 // export server
 module.exports = server;
