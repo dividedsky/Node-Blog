@@ -8,9 +8,9 @@ const helmet = require('helmet');
 const server = express();
 
 // middleware
+server.use(helmet());
 server.use(morgan('dev'));
 server.use(express.json());
-server.use(helmet());
 
 // routes
 server.get('/', (req, res) => {
@@ -48,6 +48,33 @@ server.get('/users/:id', (req, res) => {
         res.status(404).json({errorMessage: `no user with that id`});
       }
     });
+});
+
+// add a user
+server.post('/users', (req, res) => {
+  // expects an object with a 'name' field, ie: {name: 'justin'}
+  if (!req.body.name) {
+    res.status(400).json({errorMessage: 'no name in request'});
+  } else {
+    userDb
+      .insert(req.body)
+      .then(newUser => {
+        // user has been created. return created user
+        userDb
+          .get(newUser.id)
+          .then(user => res.status(201).json({user}))
+          .catch(err => {
+            // get by id failed
+            res
+              .status(500)
+              .json({errorMessage: 'User was created, but find failed'});
+          });
+      })
+      // insert failed
+      .catch(err =>
+        res.status(500).json({errorMessage: 'user creation failed'}),
+      );
+  }
 });
 
 // export server
