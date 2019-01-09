@@ -13,7 +13,7 @@ server.use(morgan('dev'));
 server.use(express.json());
 
 // capitalize users name
-const uppercaseName = (req, res, next) => {
+const capitalizeName = (req, res, next) => {
   // expects an object with a 'name' field, ie: {name: 'justin'}
   if (!req.body.name) {
     res.status(400).json({errorMessage: 'no name in request'});
@@ -62,7 +62,7 @@ server.get('/users/:id', (req, res) => {
 });
 
 // add a user
-server.post('/users', uppercaseName, (req, res) => {
+server.post('/users', capitalizeName, (req, res) => {
   userDb
     .insert(req.body)
     .then(newUser => {
@@ -79,6 +79,30 @@ server.post('/users', uppercaseName, (req, res) => {
     })
     // insert failed
     .catch(err => res.status(500).json({errorMessage: 'user creation failed'}));
+});
+
+// update a user
+server.put('/users/:id', capitalizeName, (req, res) => {
+  userDb
+    .update(req.params.id, req.body)
+    .then(count => {
+      // user has been updated. find updated user and return it
+      userDb
+        .get(req.params.id)
+        .then(updatedUser => res.status(200).json(updatedUser))
+        .catch(err =>
+          res.status(500).json({
+            errorMessage:
+              'the user was updated, but there was an error finding the updated user',
+          }),
+        );
+    })
+    .catch(err => {
+      // there was an error updating the user
+      res
+        .status(500)
+        .json({errorMessage: `there was an error updating the user: ${err}`});
+    });
 });
 
 // export server
