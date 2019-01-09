@@ -23,6 +23,27 @@ const capitalizeName = (req, res, next) => {
   }
 };
 
+// ensure user exists
+const checkForValidUser = (req, res, next) => {
+  const id = req.params.id;
+  userDb
+    .get(id)
+    .then(user => {
+      // user was found, carry on
+      if (user) {
+        next();
+      } else {
+        res.status(400).send('a user with that id does not exist');
+      }
+    })
+    .catch(err => {
+      // i don't know what this error could be, actually
+      res
+        .status(500)
+        .json({errorMessage: `there was an error retrieving the user: ${err}`});
+    });
+};
+
 // ROUTES
 server.get('/', (req, res) => {
   res.status(200).send('sanity check!');
@@ -45,20 +66,26 @@ server.get('/users/', (req, res) => {
 });
 
 // get specific user
-server.get('/users/:id', (req, res) => {
+server.get('/users/:id', checkForValidUser, (req, res) => {
   userDb
     .get(req.params.id)
     // user is retrieved, send back to client
     .then(user => {
-      if (user) {
-        console.log(user);
+      //if (user) {
+      //console.log(user);
 
-        res.status(200).json(user);
-      } else {
-        // user not found, return error
-        res.status(404).json({errorMessage: `no user with that id`});
-      }
-    });
+      res.status(200).json(user);
+      //}
+      //else {
+      //// user not found, return error
+      //res.status(404).json({errorMessage: `no user with that id`});
+      //}
+    })
+    .catch(err =>
+      res
+        .status(500)
+        .json({errorMessage: `There was an error fetching the user: ${err}`}),
+    );
 });
 
 // add a user
@@ -82,7 +109,7 @@ server.post('/users', capitalizeName, (req, res) => {
 });
 
 // update a user
-server.put('/users/:id', capitalizeName, (req, res) => {
+server.put('/users/:id', checkForValidUser, capitalizeName, (req, res) => {
   userDb
     .update(req.params.id, req.body)
     .then(count => {
