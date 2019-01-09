@@ -7,17 +7,23 @@ const helmet = require('helmet');
 
 const server = express();
 
-// middleware
+// MIDDLEWARE
 server.use(helmet());
 server.use(morgan('dev'));
 server.use(express.json());
 
-// routes
+// yelling is better
+const uppercaseName = (req, res, next) => {
+  req.body.name = req.body.name.toUpperCase();
+  next();
+};
+
+// ROUTES
 server.get('/', (req, res) => {
   res.status(200).send('sanity check!');
 });
 
-// user routes
+// USER ROUTES
 server.get('/users/', (req, res) => {
   userDb
     .get()
@@ -51,7 +57,7 @@ server.get('/users/:id', (req, res) => {
 });
 
 // add a user
-server.post('/users', (req, res) => {
+server.post('/users', uppercaseName, (req, res) => {
   // expects an object with a 'name' field, ie: {name: 'justin'}
   if (!req.body.name) {
     res.status(400).json({errorMessage: 'no name in request'});
