@@ -12,10 +12,15 @@ server.use(helmet());
 server.use(morgan('dev'));
 server.use(express.json());
 
-// yelling is better
+// capitalize users name
 const uppercaseName = (req, res, next) => {
-  req.body.name = req.body.name.toUpperCase();
-  next();
+  // expects an object with a 'name' field, ie: {name: 'justin'}
+  if (!req.body.name) {
+    res.status(400).json({errorMessage: 'no name in request'});
+  } else {
+    req.body.name = req.body.name[0].toUpperCase() + req.body.name.slice(1);
+    next();
+  }
 };
 
 // ROUTES
@@ -58,29 +63,22 @@ server.get('/users/:id', (req, res) => {
 
 // add a user
 server.post('/users', uppercaseName, (req, res) => {
-  // expects an object with a 'name' field, ie: {name: 'justin'}
-  if (!req.body.name) {
-    res.status(400).json({errorMessage: 'no name in request'});
-  } else {
-    userDb
-      .insert(req.body)
-      .then(newUser => {
-        // user has been created. return created user
-        userDb
-          .get(newUser.id)
-          .then(user => res.status(201).json({user}))
-          .catch(err => {
-            // get by id failed
-            res
-              .status(500)
-              .json({errorMessage: 'User was created, but find failed'});
-          });
-      })
-      // insert failed
-      .catch(err =>
-        res.status(500).json({errorMessage: 'user creation failed'}),
-      );
-  }
+  userDb
+    .insert(req.body)
+    .then(newUser => {
+      // user has been created. return created user
+      userDb
+        .get(newUser.id)
+        .then(user => res.status(201).json({user}))
+        .catch(err => {
+          // get by id failed
+          res
+            .status(500)
+            .json({errorMessage: 'User was created, but find failed'});
+        });
+    })
+    // insert failed
+    .catch(err => res.status(500).json({errorMessage: 'user creation failed'}));
 });
 
 // export server
