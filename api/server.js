@@ -1,6 +1,6 @@
-const postDb = require('../data/helpers/postDb');
 const configureMiddleware = require('../config/middleware');
 const userRouter = require('../users/userRouter');
+const postRouter = require('../posts/postRouter');
 
 const express = require('express');
 
@@ -14,7 +14,9 @@ server.get('/', (req, res) => {
 });
 
 server.use('/users', userRouter);
+
 // POST ROUTES
+server.use('/posts', postRouter);
 
 // export server
 module.exports = server;
