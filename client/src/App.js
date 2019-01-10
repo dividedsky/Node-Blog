@@ -21,6 +21,7 @@ class App extends Component {
     super();
     this.state = {
       users: [],
+      userPosts: [],
     };
   }
 
@@ -33,6 +34,16 @@ class App extends Component {
         console.log(`there was an error fetching the users: ${err}`),
       );
   }
+
+  getUserPosts = id => {
+    console.log('function called');
+
+    ax.get(`/users/posts/${id}`)
+      .then(posts => this.setState({userPosts: posts.data}))
+      .catch(err =>
+        console.log(`there was an error getting the user posts: ${err}`),
+      );
+  };
   render() {
     return (
       <React.Fragment>
@@ -43,7 +54,16 @@ class App extends Component {
             exact
             render={props => <Users {...props} users={this.state.users} />}
           />
-          <Route path="/:id" render={props => <UserPosts {...props} />} />
+          <Route
+            path="/:id"
+            render={props => (
+              <UserPosts
+                {...props}
+                getPosts={this.getUserPosts}
+                posts={this.state.userPosts}
+              />
+            )}
+          />
         </div>
       </React.Fragment>
     );
