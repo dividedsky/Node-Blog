@@ -20,7 +20,13 @@ const capitalizeName = (req, res, next) => {
   if (!req.body.name) {
     res.status(400).json({errorMessage: 'no name in request'});
   } else {
-    req.body.name = req.body.name[0].toUpperCase() + req.body.name.slice(1);
+    //req.body.name = req.body.name[0].toUpperCase() + req.body.name.slice(1);
+    let name = req.body.name.split(' ');
+    console.log(name);
+    name = name.map(word => word[0].toUpperCase() + word.slice(1));
+    console.log(name);
+    req.body.name = name.join(' ');
+
     next();
   }
 };
@@ -35,7 +41,9 @@ const checkForValidUser = (req, res, next) => {
       if (user) {
         next();
       } else {
-        res.status(400).send('a user with that id does not exist');
+        res
+          .status(400)
+          .json({errorMessage: 'a user with that id does not exist'});
       }
     })
     .catch(err => {
@@ -73,15 +81,7 @@ server.get('/users/:id', checkForValidUser, (req, res) => {
     .get(req.params.id)
     // user is retrieved, send back to client
     .then(user => {
-      //if (user) {
-      //console.log(user);
-
       res.status(200).json(user);
-      //}
-      //else {
-      //// user not found, return error
-      //res.status(404).json({errorMessage: `no user with that id`});
-      //}
     })
     .catch(err =>
       res
@@ -157,6 +157,8 @@ server.delete('/users/:id', checkForValidUser, (req, res) => {
       errorMessage: 'there was an error deleting the user';
     });
 });
+
+// POST ROUTES
 
 // export server
 module.exports = server;
