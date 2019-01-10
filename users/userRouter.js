@@ -37,7 +37,7 @@ router.get('/:id', checkForValidUser, (req, res) => {
 });
 
 //// add a user
-router.post('/users', capitalizeName, (req, res) => {
+router.post('/', capitalizeName, (req, res) => {
   userDb
     .insert(req.body)
     .then(newUser => {
@@ -57,7 +57,7 @@ router.post('/users', capitalizeName, (req, res) => {
 });
 
 //// update a user
-router.put('/users/:id', checkForValidUser, capitalizeName, (req, res) => {
+router.put('/:id', checkForValidUser, capitalizeName, (req, res) => {
   userDb
     .update(req.params.id, req.body)
     .then(count => {
@@ -81,7 +81,7 @@ router.put('/users/:id', checkForValidUser, capitalizeName, (req, res) => {
 });
 
 //// delete a user
-router.delete('/users/:id', checkForValidUser, (req, res) => {
+router.delete('/:id', checkForValidUser, (req, res) => {
   userDb
     .remove(req.params.id)
     .then(count => {
@@ -102,6 +102,18 @@ router.delete('/users/:id', checkForValidUser, (req, res) => {
     .catch(err => {
       errorMessage: 'there was an error deleting the user';
     });
+});
+
+// get user posts
+router.get('/posts/:id', checkForValidUser, (req, res) => {
+  userDb
+    .getUserPosts(req.params.id)
+    .then(posts => res.status(200).json(posts))
+    .catch(err =>
+      res.status(500).json({
+        errorMessage: `there was an error retrieving the posts: ${err}`,
+      }),
+    );
 });
 
 module.exports = router;
