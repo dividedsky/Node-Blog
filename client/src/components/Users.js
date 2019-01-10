@@ -2,11 +2,6 @@ import React from 'react';
 import axios from 'axios';
 import styled, {ThemeProvider} from 'styled-components';
 
-// axios instance with base url to simplify requests
-//const ax = axios.create({
-//baseURL: 'http://localhost:5000',
-//});
-
 // theme for styled components
 const theme = {
   granite: '#6d6466',
@@ -47,23 +42,6 @@ const User = styled.div`
 `;
 
 const Users = props => {
-  //constructor() {
-  //super();
-  //this.state = {
-  //users: [],
-  //};
-  //}
-
-  //componentDidMount() {
-  //ax.get('/users')
-  //.then(res => {
-  //this.setState({users: res.data});
-  //})
-  //.catch(err =>
-  //console.log(`there was an error fetching the users: ${err}`),
-  //);
-  //}
-
   if (!props.users.length) return <h3>loading</h3>;
   return (
     <ThemeProvider theme={theme}>
