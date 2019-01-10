@@ -15,7 +15,7 @@ module.exports = {
       return Promise.all(promises).then(function(results) {
         let [posts, tags] = results;
         let post = posts[0];
-        post.tags = tags.map(t => t.tag);
+        //post.tags = tags.map(t => t.tag);
 
         return post;
       });
@@ -32,7 +32,7 @@ module.exports = {
   insert: function(post) {
     return db('posts')
       .insert(post)
-      .then(ids => ({ id: ids[0] }));
+      .then(ids => ({id: ids[0]}));
   },
   update: function(id, post) {
     return db('posts')

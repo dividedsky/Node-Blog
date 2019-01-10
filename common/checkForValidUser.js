@@ -1,3 +1,4 @@
+const userDb = require('../data/helpers/userDb');
 // ensure user exists
 const checkForValidUser = (req, res, next) => {
   const id = req.params.id;
