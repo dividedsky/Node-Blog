@@ -1,4 +1,5 @@
 const checkForValidUser = require('../common/checkForValidUser');
+const checkForValidPost = require('../common/checkForValidPost');
 const express = require('express');
 const db = require('../data/helpers/postDb');
 const router = express.Router();
@@ -53,26 +54,16 @@ router.post('/:id', checkForValidUser, (req, res) => {
   }
 });
 
-router.delete('/:id', (req, res) => {
-  // check for valid id
-  db.get(req.params.id)
-    .then(post => {
-      if (!post) {
-        // no post!
-        res.status(404).json({errorMessage: `there is no post with that id!`});
-      } else {
-        db.remove(req.params.id)
-          .then(res.status(200).json({message: 'the post has been deleted'}))
-          .catch(err =>
-            res.status(500).json({
-              errorMessage: `there was an error deleting the post: ${err}`,
-            }),
-          );
-      }
-    })
+router.delete('/:id', checkForValidPost, (req, res) => {
+  db.remove(req.params.id)
+    .then(res.status(200).json({message: 'the post has been deleted'}))
     .catch(err =>
-      res.status(500).json({errorMessage: `there was an error: ${err}`}),
+      res.status(500).json({
+        errorMessage: `there was an error deleting the post: ${err}`,
+      }),
     );
 });
+
+router.put('/:id', (req, res) => {});
 
 module.exports = router;
