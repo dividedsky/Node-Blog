@@ -64,6 +64,32 @@ router.delete('/:id', checkForValidPost, (req, res) => {
     );
 });
 
-router.put('/:id', (req, res) => {});
+router.put('/:id', checkForValidPost, (req, res) => {
+  // ensure post is valid
+  db.update(req.params.id, req.body)
+    .then(count => {
+      if (count === 1) {
+        // find the updated post and return it
+        db.get(req.params.id)
+          .then(post => res.status(200).json(post))
+          .catch(err =>
+            res
+              .status(500)
+              .json({
+                errorMessage: `there was an error retrieving the updated post: ${err}`,
+              }),
+          );
+      } else {
+        res
+          .status(500)
+          .json({errorMessage: `there was an error updating the post!!`});
+      }
+    })
+    .catch(err =>
+      res
+        .status(500)
+        .json({errorMessage: `there was an error updating the post: ${err}`}),
+    );
+});
 
 module.exports = router;
